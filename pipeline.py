@@ -15,7 +15,7 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-def setup_loggin(verbose = False):
+def setup_logging(verbose = False):
     """Set up logging for the pipeline"""
     logging.basicConfig(level = logging.INFO,
                         format = "%(asctime)s %(levelname)-8s %(message)s",
@@ -53,9 +53,33 @@ def parse_arguments():
 
 def validate_input(filepath):
     """Check whether the input path exists and is a file"""
+    if Path(filepath).is_file():
+        logger.info(f"Input file validated: {filepath}")
+        return True
+    else:
+        logger.error(f"Input file not found: {filepath}")
+        return False
 
 def main():
     """Main pipeline function"""
+    # argument parser
+    arguments = parse_arguments()
+    arguments_input = arguments[0]
+    arguments_output = arguments[1]
+    arguments_format = arguments[2]
+    arguments_verbose = arguments[3]
+
+    # logging
+    setup_logging(arguments_verbose)
+    logger.debug(f"Arguments parsed: input = {arguments_input}, "
+                 f"output = {arguments_output}, "
+                 f"format = {arguments_format}, "
+                 f"verbose = {arguments_verbose}")
+
+    # validate input file
+    input_valid = validate_input(arguments_input)
+    if not input_valid:
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
